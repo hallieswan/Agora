@@ -520,10 +520,17 @@ describe('Component: GeneComparisonToolComponent', () => {
       expect(label2).toBe(expected2);
     });
 
-    it('should set circle size to zero for null/undefined pValues', () => {
+    it('should set circle size to zero for undefined pValues', () => {
       let tissue: GCTGeneTissue | undefined;
-      // null/undefined values should be zero
+      // undefined values should result in a circle size of zero
+      expect(tissue).toBeUndefined();
       const result = component.getCircleSize(tissue?.adj_p_val);
+      expect(result).toBe(0);
+    });
+
+    it('should set circle size to zero for null pValues', () => {
+      // null values should result in a circle size of zero pixels
+      const result = component.getCircleSize(null);
       expect(result).toBe(0);
     });
 

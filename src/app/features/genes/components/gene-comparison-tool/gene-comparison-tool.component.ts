@@ -901,7 +901,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     }
   }
 
-  getCircleSize(pval: number | undefined) {
+  getCircleSize(pval: number | null | undefined) {
     // define min and max size of possible circles in pixels
     const MIN_SIZE = 6;
     const MAX_SIZE = 50;

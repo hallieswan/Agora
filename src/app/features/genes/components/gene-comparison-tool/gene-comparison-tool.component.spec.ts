@@ -530,7 +530,8 @@ describe('Component: GeneComparisonToolComponent', () => {
 
     it('should set circle size to zero for null pValues', () => {
       // null values should result in a circle size of zero pixels
-      const result = component.getCircleSize(null);
+      const pValue = null;
+      const result = component.getCircleSize(pValue);
       expect(result).toBe(0);
     });
 

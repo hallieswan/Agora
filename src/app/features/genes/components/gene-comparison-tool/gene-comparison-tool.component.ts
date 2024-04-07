@@ -901,13 +901,14 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     }
   }
 
-  getCircleSize(pval: number | undefined) {
+  getCircleSize(pval: number | null | undefined) {
     // define min and max size of possible circles in pixels
     const MIN_SIZE = 6;
     const MAX_SIZE = 50;
 
-    // shouldn't be undefined but if it is, don't show a circle
-    if (pval === undefined)
+    // pval shouldn't be undefined but if it is, don't show a circle
+    // null means there is no data in which case, also don't show a circle
+    if (pval === null || pval === undefined)
       return 0;
 
     // if significance cutoff radio button selected and 

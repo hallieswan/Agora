@@ -27,6 +27,7 @@ import { ApiService, HelperService } from '../../../../core/services';
 import { GeneService } from '../../../../features/genes/services';
 import { routes } from '../../../../app.routing';
 import { comparisonGeneEmptyHGNCMock, comparisonGeneMock1, comparisonGeneMock2 } from '../../../../testing';
+import { GCTGeneTissue } from '../../../../models';
 
 const DEFAULT_SIGNIFICANCE_THRESHOLD = 0.05;
 
@@ -517,6 +518,33 @@ describe('Component: GeneComparisonToolComponent', () => {
       const label2 = helpers.getGeneLabelForSRM(comparisonGeneEmptyHGNCMock);
       const expected2 = 'ENSG00000147065';
       expect(label2).toBe(expected2);
+    });
+
+    it('should set circle size to zero for undefined pValues', () => {
+      let tissue: GCTGeneTissue | undefined;
+      // undefined values should result in a circle size of zero
+      expect(tissue).toBeUndefined();
+      const result = component.getCircleSize(tissue?.adj_p_val);
+      expect(result).toBe(0);
+    });
+
+    it('should set circle size to zero for null pValues', () => {
+      // null values should result in a circle size of zero pixels
+      const pValue = null;
+      const result = component.getCircleSize(pValue);
+      expect(result).toBe(0);
+    });
+
+    it('should set circle size for pValues within acceptable ranges', () => {
+      let expectedSizeInPixels = 0;
+      let pValue = 0.5;
+      let result = component.getCircleSize(pValue);
+      expect(result).toBe(expectedSizeInPixels);
+
+      expectedSizeInPixels = 33;
+      pValue = 0.04;
+      result = component.getCircleSize(pValue);
+      expect(result).toBe(expectedSizeInPixels);
     });
   });
 });

@@ -69,9 +69,11 @@ export class GeneSimilarComponent implements OnInit {
         this.helperService.setLoading(true);
         this.geneService
           .getGene(params.get('id') as string)
-          .subscribe((gene: Gene) => {
-            this.gene = gene;
-            this.init();
+          .subscribe((gene: Gene | null) => {
+            if (gene) {
+              this.gene = gene;
+              this.init();
+            }
           });
       }
     });

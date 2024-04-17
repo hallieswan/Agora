@@ -70,7 +70,10 @@ export class GeneSimilarComponent implements OnInit {
         this.geneService
           .getGene(params.get('id') as string)
           .subscribe((gene: Gene | null) => {
-            if (gene) {
+            if (!gene) {
+              this.helperService.setLoading(false);
+              this.router.navigateByUrl('/404-not-found', { skipLocationChange: true });
+            } else {
               this.gene = gene;
               this.init();
             }

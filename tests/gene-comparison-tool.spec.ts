@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { waitForSpinnerNotVisible } from './helpers/utils';
 
 test.describe('specific viewport block', () => {
   test.slow();
@@ -8,8 +9,7 @@ test.describe('specific viewport block', () => {
     await page.goto('/genes/comparison?category=Protein+-+Differential+Expression');
 
     // wait for page to load (i.e. spinner to disappear)
-    await expect(page.locator('div:nth-child(4) > div > .spinner'))
-      .not.toBeVisible({ timeout: 250000});
+    await waitForSpinnerNotVisible(page);
 
     // Expect a title "to contain" a substring.
     await expect(page).toHaveTitle('Gene Comparison | Visual comparison tool for AD genes');
@@ -20,8 +20,7 @@ test.describe('specific viewport block', () => {
     await page.goto('/genes/comparison?category=Protein+-+Differential+Expression');
 
     // wait for page to load (i.e. spinner to disappear)
-    await expect(page.locator('div:nth-child(4) > div > .spinner'))
-      .not.toBeVisible({ timeout: 150000});
+    await waitForSpinnerNotVisible(page, 150000);
   
     // expect sub-category dropdown to be SRM
     const dropdown = page.locator('#subCategory');

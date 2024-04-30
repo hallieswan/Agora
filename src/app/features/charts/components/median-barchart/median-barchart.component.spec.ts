@@ -55,6 +55,7 @@ describe('Component: BarChart - Median', () => {
   let element: HTMLElement;
 
   beforeEach(waitForAsync(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     TestBed.configureTestingModule({
       declarations: [MedianBarChartComponent],
       imports: [RouterTestingModule],

@@ -49,6 +49,7 @@ describe('Component: GeneComparisonToolComponent', () => {
   let route: ActivatedRoute;
 
   beforeEach(fakeAsync(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     TestBed.configureTestingModule({
       declarations: [
         GeneComparisonToolComponent,
@@ -431,6 +432,7 @@ describe('Component: GeneComparisonToolComponent', () => {
       ) as HTMLElement;
       filterClearButton.click();
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       fixture.whenStable().then(() => {
         fixture.detectChanges();
         expectSignificanceThresholdIsNotApplied();
@@ -449,6 +451,7 @@ describe('Component: GeneComparisonToolComponent', () => {
       ) as HTMLElement;
       clearAllButton.click();
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       fixture.whenStable().then(() => {
         fixture.detectChanges();
         expectSignificanceThresholdIsNotApplied();
@@ -460,6 +463,7 @@ describe('Component: GeneComparisonToolComponent', () => {
       component.initData([comparisonGeneMock1, comparisonGeneMock2]);
       route.queryParams = of({});
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       fixture.whenStable().then(() => {
         fixture.detectChanges();
         expectSignificanceThresholdIsNotApplied();
@@ -467,6 +471,7 @@ describe('Component: GeneComparisonToolComponent', () => {
         const toggle = element.querySelector(TOGGLE_CLASS) as HTMLElement;
         toggle.click();
 
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         fixture.whenStable().then(() => {
           fixture.detectChanges();
           expectSignificanceThresholdIsApplied();

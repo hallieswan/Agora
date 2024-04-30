@@ -13,7 +13,7 @@ test.describe('specific viewport block', () => {
     await expect(page).toHaveTitle('Agora');
 
     // expect div for page not found content to be visible
-    expect(page.locator('.page-not-found')).toBeVisible();
+    await expect(page.locator('.page-not-found')).toBeVisible();
   });
 
   test('consistency of change section heading is visible when using anchor link', async ({ page}) => {
@@ -24,6 +24,6 @@ test.describe('specific viewport block', () => {
     await waitForSpinnerNotVisible(page);
 
     const header = page.getByRole('heading', { name:  'Consistency of Change in Expression'});
-    expect(header).toBeInViewport();
+    await expect(header).toBeInViewport();
   });
 });

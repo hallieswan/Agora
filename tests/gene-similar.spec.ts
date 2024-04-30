@@ -12,6 +12,6 @@ test.describe('specific viewport block', () => {
     await expect(page).toHaveTitle('Agora');
 
     // expect div for page not found content to be visible
-    expect(page.locator('.page-not-found')).toBeVisible();
+    await expect(page.locator('.page-not-found')).toBeVisible();
   });
 });

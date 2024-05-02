@@ -26,7 +26,7 @@ import {
 } from './helpers/gct-pinning';
 
 test.describe('GCT: Pinning Genes from URL', () => {
-  test('when rna differential expression url does not include pinned genes, no genes are pinned', async ({
+  test('when RNA url does not include pinned genes, no genes are pinned', async ({
     page,
   }) => {
     await page.goto(URL_GCT);
@@ -41,7 +41,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     await confirmPinnedItemsCount(page, 0);
   });
 
-  test('when protein differential expression url does not include pinned genes, no genes are pinned', async ({
+  test('when Protein url does not include pinned genes, no genes are pinned', async ({
     page,
   }) => {
     await page.goto(URL_GCT_PROTEIN);
@@ -56,7 +56,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     await confirmPinnedItemsCount(page, 0);
   });
 
-  test('when rna differential expression url includes 50 pinned genes, all genes are pinned', async ({
+  test('when RNA url includes 50 pinned genes, all genes are pinned', async ({
     page,
   }) => {
     const url = `${URL_GCT}?${formatPinnedGenesQueryParam(fiftyGenes)}`;
@@ -82,7 +82,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     });
   });
 
-  test('when rna differential expression url includes >50 pinned genes, only 50 genes are pinned and toast is displayed', async ({
+  test('when RNA url includes >50 pinned genes, only 50 genes are pinned and toast is displayed', async ({
     page,
   }) => {
     const url = `${URL_GCT}?${formatPinnedGenesQueryParam(fiftyOneGenes)}`;
@@ -108,7 +108,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     });
   });
 
-  test('when rna differential expression url includes invalid gene, that gene is dropped from the url', async ({
+  test('when RNA url includes invalid gene, that gene is dropped from the url', async ({
     page,
   }) => {
     const validGeneId = geneWithMultipleProteinsTMT.ensemblId;
@@ -141,7 +141,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     });
   });
 
-  test('when rna differential expression url includes proteins, the related gene is pinned', async ({
+  test('when RNA url includes proteins, the related gene is pinned', async ({
     page,
   }) => {
     const geneProteins = geneWithMultipleProteinsTMT.uniProtIds.map(
@@ -166,7 +166,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
   });
 
   test.fail(
-    'when protein differential expression url includes a gene, all related proteins are pinned',
+    'when Protein url includes a gene, all related proteins are pinned',
     async ({ page }) => {
       const url = `${URL_GCT_PROTEIN_TMT}&${formatPinnedGenesQueryParam([
         geneWithMultipleProteinsTMT.ensemblId,
@@ -194,7 +194,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
   );
 
   test.fail(
-    'when protein differential expression url includes 50 proteins from 50 unique genes, all proteins are pinned',
+    'when Protein url includes 50 proteins from 50 unique genes, all proteins are pinned',
     async ({ page }) => {
       const url = `${URL_GCT_PROTEIN_TMT}&${formatPinnedGenesQueryParam(
         fiftyProteinsToFiftyUniqueGenesTMT
@@ -216,7 +216,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
   );
 
   test.fail(
-    'when protein differential expression url includes >50 proteins from 50 unique genes, all proteins are pinned',
+    'when Protein url includes >50 proteins from 50 unique genes, all proteins are pinned',
     async ({ page }) => {
       const fortyNineProteinsToUniqueGenes =
         fiftyProteinsToFiftyUniqueGenesTMT.slice(0, -1);
@@ -261,7 +261,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
   );
 
   test.fail(
-    'when protein differential expression url includes proteins from 51 unique genes, only proteins from 50 genes are pinned',
+    'when Protein url includes proteins from 51 unique genes, only proteins from 50 genes are pinned',
     async ({ page }) => {
       const oneGeneWithManyProteins =
         geneWithMultipleProteinsTMT.uniProtIds.map(
@@ -304,7 +304,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
   );
 
   test.fail(
-    'when protein differential expression url includes invalid protein, that protein is dropped from the url',
+    'when Protein url includes invalid protein, that protein is dropped from the url',
     async ({ page }) => {
       const validGeneProtein = fiftyProteinsToFiftyUniqueGenesTMT[1];
       const url = `${URL_GCT_PROTEIN_TMT}&${formatPinnedGenesQueryParam([

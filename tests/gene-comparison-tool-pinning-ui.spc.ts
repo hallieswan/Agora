@@ -37,7 +37,9 @@ test.describe('GCT: Pinning Genes via UI', () => {
     });
   });
 
-  test('genes can be pinned from quick filters', async ({ page }) => {
+  test('only 50 genes are pinned when pinning all genes matched by a quick filter', async ({
+    page,
+  }) => {
     await page.goto(URL_GCT);
     await expectGctPageLoaded(
       page,
@@ -45,7 +47,7 @@ test.describe('GCT: Pinning Genes via UI', () => {
       GCT_RNA_SUBCATEGORIES.AD
     );
 
-    await test.step('only 50 genes are pinned when pinning all genes matched by a quick filter', async () => {
+    await test.step('apply a quick filter', async () => {
       await page.getByRole('button', { name: 'Filter Genes' }).click();
       await page.getByRole('button', { name: 'Quick Filters' }).click();
       await page.getByText('All Nominated targets').click();

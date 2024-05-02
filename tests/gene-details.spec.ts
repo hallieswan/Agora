@@ -8,6 +8,7 @@ test.describe('specific viewport block', () => {
   test('invalid gene results in a 404 redirect', async ({ page }) => {
     // go to invalid ENSG page
     await page.goto('/genes/ENSG00000000000');
+    await waitForSpinnerNotVisible(page);
 
     // expect a title "to contain" a substring.
     await expect(page).toHaveTitle('Agora');

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { waitForSpinnerNotVisible } from './helpers/utils';
 
 test.describe('specific viewport block', () => {
   test.slow();
@@ -7,6 +8,7 @@ test.describe('specific viewport block', () => {
   test('invalid gene results in a 404 redirect', async ({ page }) => {
     // go to invalid ENSG page
     await page.goto('/genes/ENSG00000000000/similar');
+    await waitForSpinnerNotVisible(page);
 
     // expect a title "to contain" a substring.
     await expect(page).toHaveTitle('Agora');

@@ -284,20 +284,20 @@
             </p-table>
 
             <div
-              *ngIf="pinnedGenes.length > 0"
+              *ngIf="pinnedItems.length > 0"
               class="table-divider table-divider-1"
             >
               <div class="table-divider-inner">
                 <div id="pinned-genes-header">
                   <span *ngIf="category === 'RNA - Differential Expression'">
-                    Pinned Genes ({{ pinnedGenes.length }}/50)
+                    Pinned Genes ({{ pinnedItems.length }}/50)
                   </span>
                   <div *ngIf="category === 'Protein - Differential Expression'">
                     <div>
                     Pinned Genes ({{ uniquePinnedGenesCount }}/50)&nbsp;&nbsp;&nbsp;
                     </div>
                     <div id="pinned-proteins">
-                      {{ pinnedGenes.length }} Proteins
+                      {{ pinnedItems.length }} Protein<ng-container *ngIf="pinnedItems.length > 1">s</ng-container>
                     </div>
                   </div>
                 </div>
@@ -314,7 +314,7 @@
             </div>
             <p-table
               #pinnedTable
-              [value]="pinnedGenes"
+              [value]="pinnedItems"
               [customSort]="true"
               (sortFunction)="sortCallback($event)"
               breakpoint="0"
@@ -425,7 +425,7 @@
             </div>
             <div
               *ngIf="
-                !searchTerm && !hasSelectedFilters() && pinnedGenes.length > 0
+                !searchTerm && !hasSelectedFilters() && pinnedItems.length > 0
               "
               class="table-divider"
             >
@@ -573,8 +573,8 @@
     <gene-comparison-tool-pinned-genes-modal
       #pinnedGenesModal
       (onChange)="onPinnedGenesModalChange($event)"
-      [pinnedGenes]="pinnedGenes"
-      [pendingPinnedGenes]="pendingPinnedGenes"
+      [pinnedGenes]="pinnedItems"
+      [pendingPinnedGenes]="pendingPinnedItems"
       [maxPinnedGenes]="maxPinnedGenes"
     ></gene-comparison-tool-pinned-genes-modal>
   </div>

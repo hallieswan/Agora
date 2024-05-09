@@ -106,7 +106,7 @@ describe('Component: GeneComparisonToolComponent', () => {
     fixture.detectChanges();
 
     expect(component.genes).toEqual([comparisonGeneMock1, comparisonGeneMock2]);
-    expect(component.pinnedGenes).toEqual([comparisonGeneMock1]);
+    expect(component.pinnedItems).toEqual([comparisonGeneMock1]);
     flush();
   }));
 
@@ -190,15 +190,15 @@ describe('Component: GeneComparisonToolComponent', () => {
 
     component.clearPinnedGenes();
     fixture.detectChanges();
-    expect(component.pinnedGenes.length).toEqual(0);
+    expect(component.pinnedItems.length).toEqual(0);
 
     component.onPinGeneClick(comparisonGeneMock1);
     fixture.detectChanges();
-    expect(component.pinnedGenes.length).toEqual(1);
+    expect(component.pinnedItems.length).toEqual(1);
     
     component.onUnPinGeneClick(comparisonGeneMock1, true);
     fixture.detectChanges();
-    expect(component.pinnedGenes.length).toEqual(0);
+    expect(component.pinnedItems.length).toEqual(0);
   });
 
   it('should clear pinned genes', fakeAsync(() => {
@@ -207,7 +207,7 @@ describe('Component: GeneComparisonToolComponent', () => {
 
     component.clearPinnedGenes();
     fixture.detectChanges();
-    expect(component.pinnedGenes.length).toEqual(0);
+    expect(component.pinnedItems.length).toEqual(0);
     flush();
   }));
 

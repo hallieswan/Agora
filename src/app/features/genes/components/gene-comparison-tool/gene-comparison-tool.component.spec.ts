@@ -112,6 +112,7 @@ describe('Component: GeneComparisonToolComponent', () => {
 
   it('should search', () => {
     component.initData([comparisonGeneMock1, comparisonGeneMock2]);
+    component.refresh();
     fixture.detectChanges();
 
     const input = element.querySelector(
@@ -180,7 +181,7 @@ describe('Component: GeneComparisonToolComponent', () => {
 
     el = element.querySelector('#pinned-genes-header') as HTMLElement;
     
-    expect(el.textContent).toBe('Pinned Genes (1/50)');
+    expect(el.textContent?.trim()).toBe('Pinned Genes (1/50)');
   });
 
   it('should pin/upin gene', () => {
@@ -191,11 +192,11 @@ describe('Component: GeneComparisonToolComponent', () => {
     fixture.detectChanges();
     expect(component.pinnedGenes.length).toEqual(0);
 
-    component.pinGene(comparisonGeneMock1, true);
+    component.onPinGeneClick(comparisonGeneMock1);
     fixture.detectChanges();
     expect(component.pinnedGenes.length).toEqual(1);
     
-    component.unpinGene(comparisonGeneMock1, true);
+    component.onUnPinGeneClick(comparisonGeneMock1, true);
     fixture.detectChanges();
     expect(component.pinnedGenes.length).toEqual(0);
   });
@@ -397,7 +398,7 @@ describe('Component: GeneComparisonToolComponent', () => {
       expect(
         element.querySelector(TOGGLE_CLASS)?.querySelector('input')?.checked
       ).toBeTrue();
-      expect(component.getUrlParam('significance')[0]).toEqual(
+      expect(component.getUrlParam('significance')).toEqual(
         threshold
       );
     };

@@ -241,10 +241,6 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     return property.split('.').reduce((o: any, i: any) => o[i], gene);
   }
   
-  getPreviousPins() {
-    return this.pinnedGenes;
-  }
-
   initData(genes: GCTGene[]) {
     // hide brain region columns initially
     this.brainRegionsColumns.forEach(c => c.visible = false);
@@ -656,19 +652,10 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     this.lastPinnedSubCategory = this.subCategory;
   }
 
-  getPinCategories() {
-    const categories = this.getPinnedGenesCacheKey(this.category, this.subCategory);
-    return categories;
-  }
-
   getPinnedGenesCacheKey(category: string, subCategory?: string) {
     return (category + (subCategory ? '-' + subCategory : ''))
       .replace(/[^a-z0-9]/gi, '')
       .toLowerCase();
-  }
-
-  getPinnedGenesCache() {
-    return this.pinnedGenesCache;
   }
 
   setPinnedGenesCache(genes: GCTGene[]) {
@@ -966,7 +953,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     }
 
     if (this.significanceThresholdActive) {
-      params['significance'] = [this.significanceThreshold];
+      params['significance'] = this.significanceThreshold;
     }
 
     this.urlParams = params;

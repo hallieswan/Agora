@@ -97,6 +97,8 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
   urlParamsSubscription: Subscription | undefined;
 
   /* Pinned ---------------------------------------------------------------- */
+  initialLoad = true;
+  
   lastPinnedCategory = '';
   lastPinnedSubCategory = '';
 
@@ -250,64 +252,74 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
       return item.ensembl_gene_id + item.uniprotid;
   }
 
+  // when current category is RNA, this method will always return a list of ensembl gene ids, regardless of previous category
+  // when current category is Protein, this method will return either ensg (if previous category was RNA) or ensg + uniprot (if previous category was Protein)
   getPreviousPins() {
+    // if the last pinned category is blank, then this means this is the initial load
+    // note: we only need to check the category for blank but subcategory will also be blank
+    // In this scenario, we check the url to see if this was a shared url with pinned genes/proteins
+    if (this.lastPinnedCategory === '') {
+      // check the url for pinned genes/proteins
+      this.setLastPinnedCategories();
+      return this.getUrlParam('pinned', true);
+    }
+
     if (this.currentCategoriesMatchLastPinnedCategories()) {
       // load from cache since it has been previously cached
+      // uid works for both proten and rna cases
       return this.pinnedItemsCache.map((g: GCTGene) => g.uid);
     } else {
-      // if the last pinned category is blank, then this means this is the initial load
-      // note: we only need to check the category for blank but subcategory will also be blank
-      // In this scenario, we check the url to see if this was a shared url with pinned genes/proteins
-      if (this.lastPinnedCategory === '') {
-        // check the url for pinned genes/proteins
-        this.setLastPinnedCategories();
-        return this.getUrlParam('pinned', true);
+      // categories don't match, so grab it from the cache and format it
+      if (this.category === 'RNA - Differential Expression') {
+        // if the current category is RNA, we only need the previous ensgs
+        // instead of getting the uid, we need to get the ensg
+        return this.pinnedItemsCache.map((g: GCTGene) => g.ensembl_gene_id);
       } else {
-        // categories don't match, so grab it from the cache
-        if (this.category === 'RNA - Differential Expression') {
-          return this.pinnedItemsCache.map((g: GCTGene) => g.ensembl_gene_id);
-        } else {
-          return this.pinnedItemsCache.map((g: GCTGene) => g.uid);
-        }
+        // if the current category is Protein, we need the uid
+        // because the previous category and subcategory may or may not match
+        // e.g. same category and different subcategory OR different category
+        return this.pinnedItemsCache.map((g: GCTGene) => g.uid);
       }
     }
   }
   
-  initData(genes: GCTGene[]) {
+  initData(items: GCTGene[]) {
     // hide brain region columns initially
     this.brainRegionsColumns.forEach(c => c.visible = false);
     
-    const pinnedGenes: GCTGene[] = [];
-    
-    // load the previous pins and format previousPins to match the current category
+    const itemsToPin: GCTGene[] = [];
+
+    // load the previous pins and format previousPins
     const previousPins = this.getPreviousPins();
     
-    genes.forEach((gene: GCTGene) => {
-      gene.uid = this.getUid(gene);
-      gene.search_array = [
-        gene.ensembl_gene_id.toLowerCase(),
-        gene.hgnc_symbol.toLowerCase(),
+    items.forEach((item: GCTGene) => {
+      item.uid = this.getUid(item);
+      item.search_array = [
+        item.ensembl_gene_id.toLowerCase(),
+        item.hgnc_symbol.toLowerCase(),
       ];
 
       if (this.category === 'Protein - Differential Expression') {
-        gene.search_array.push(gene.uniprotid?.toLowerCase() || '');
+        item.search_array.push(item.uniprotid?.toLowerCase() || '');
 
         // if there is a match on uid or ensembl_gene_id, add it to pinnedGenes
         // if it wasn't added already
         if (this.lastPinnedCategory === 'RNA - Differential Expression') {
-          if (previousPins.includes(gene.ensembl_gene_id))
-            pinnedGenes.push(gene);
+          // previousPins would be a list of ensg
+          if (previousPins.includes(item.ensembl_gene_id))
+            itemsToPin.push(item);
         } else {
-          if (previousPins.includes(gene.uid))
-            pinnedGenes.push(gene);
+          // previousPins would be a list of ensg+uniprotids
+          if (previousPins.includes(item.uid))
+            itemsToPin.push(item);
         }
       } else {
-        if (previousPins.includes(gene.uid)) {
-          pinnedGenes.push(gene);
+        if (previousPins.includes(item.uid)) {
+          itemsToPin.push(item);
         }
       }
 
-      gene.search_string = gene.search_array.join();
+      item.search_string = item.search_array.join();
 
       // apply filters
       this.filters.forEach((filter: GCTFilter) => {
@@ -315,7 +327,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
           return;
         }
 
-        const value = this.getGeneProperty(gene, filter.field);
+        const value = this.getGeneProperty(item, filter.field);
 
         if (value) {
           if (Array.isArray(value)) {
@@ -329,15 +341,21 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
       });
 
       // add tissue columns
-      gene.tissues?.forEach((tissue: GCTGeneTissue) => {
+      item.tissues?.forEach((tissue: GCTGeneTissue) => {
         const column = this.brainRegionsColumns.find(c => c.field === tissue.name);
         if (column)
           column.visible = true;
       });
     });
 
-    this.uniquePinnedGenesCount = this.getCountOfUniqueGenes();
+    // on initial load, we want to cache any items
+    if (this.initialLoad) {
+      this.initialLoad = false;
+      this.setPinnedGenesCache(itemsToPin);
+    }
 
+    this.uniquePinnedGenesCount = this.getCountOfUniqueGenes();
+    
     this.updateVisibleColumns();
 
     if (!this.sortField || !this.columns.includes(this.sortField)) {
@@ -350,8 +368,8 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
       this.searchTerm = preSelection.join(',');
     }
 
-    if (pinnedGenes.length) {
-      pinnedGenes.sort((a, b) =>
+    if (itemsToPin.length) {
+      itemsToPin.sort((a, b) =>
         a.ensembl_gene_id > b.ensembl_gene_id ? 1 : -1
       );
 
@@ -359,19 +377,19 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
         'Protein - Differential Expression' === this.category &&
         this.uniquePinnedGenesCount > this.maxPinnedGenes
       ) {
-        this.pendingPinnedItems = pinnedGenes;
+        this.pendingPinnedItems = itemsToPin;
         this.pinnedGenesModal.show();
       } else {
         this.pinnedItems = [];
         this.pendingPinnedItems = [];
         this.uniquePinnedGenesCount = this.getCountOfUniqueGenes();
-        this.pinGenes(pinnedGenes);
+        this.pinGenes(itemsToPin);
       }
     } else {
       this.pinnedItems = [];
     }
 
-    this.genes = genes;
+    this.genes = items;
   }
 
   /* ----------------------------------------------------------------------- */
@@ -697,6 +715,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
       // the same unique id exists, so don't allow it to be added
       if (index > -1)
         return;
+
       if (this.uniquePinnedGenesCount >= this.maxPinnedGenes) {
         // border condition: if we are at the max allowable pinned genes
         // check if the pinned genes list has a gene with the ensembl id, 
@@ -712,6 +731,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     }
 
     this.pinnedItems.push(gene);
+    this.uniquePinnedGenesCount = this.getCountOfUniqueGenes();
     
     if (refresh) {
       this.clearPinnedGenesCache();

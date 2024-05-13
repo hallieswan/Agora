@@ -63,5 +63,10 @@ test.describe('specific viewport block', () => {
 
     // expect url to be correct
     expect(page.url()).toBe('http://localhost:8080/genes/comparison?category=Protein+-+Differential+Expression');
+
+    // expect sort arrow to be descending
+    await expect(
+      page.getByRole('columnheader', { name: 'RISK SCORE' }).locator('i')
+    ).toHaveClass(/pi-sort-amount-down/); 
   });
 });

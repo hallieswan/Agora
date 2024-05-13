@@ -360,6 +360,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
 
     if (!this.sortField || !this.columns.includes(this.sortField)) {
       this.sortField = this.columns[0];
+      this.sortOrder = -1;
     }
 
     const preSelection = this.helperService.getGCTSelection();

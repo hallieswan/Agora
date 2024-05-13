@@ -351,7 +351,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     // on initial load, we want to cache any items
     if (this.initialLoad) {
       this.initialLoad = false;
-      this.setPinnedGenesCache(itemsToPin);
+      this.setPinnedItemsCache(itemsToPin);
     }
 
     this.uniquePinnedGenesCount = this.getCountOfUniqueGenes();
@@ -679,17 +679,17 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
       .toLowerCase();
   }
 
-  setPinnedGenesCache(genes: GCTGene[]) {
+  setPinnedItemsCache(genes: GCTGene[]) {
     this.pinnedItemsCache = genes;
   }
 
-  clearPinnedGenesCache() {
+  clearPinnedItemsCache() {
     this.pinnedItemsCache = [];
     this.uniquePinnedGenesCount = this.getCountOfUniqueGenes();
   }
 
   refreshPinnedGenes() {
-    this.setPinnedGenesCache(this.pinnedItems);
+    this.setPinnedItemsCache(this.pinnedItems);
     this.filter();
     this.updateUrl();
   }
@@ -734,7 +734,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     this.uniquePinnedGenesCount = this.getCountOfUniqueGenes();
     
     if (refresh) {
-      this.clearPinnedGenesCache();
+      this.clearPinnedItemsCache();
       this.refreshPinnedGenes();
     }
   }
@@ -871,7 +871,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     this.pinnedItems.splice(index, 1);
 
     if (refresh) {
-      this.clearPinnedGenesCache();
+      this.clearPinnedItemsCache();
       this.refreshPinnedGenes();
     }
 
@@ -886,7 +886,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
 
   clearPinnedGenes() {
     this.pinnedItems = [];
-    this.clearPinnedGenesCache();
+    this.clearPinnedItemsCache();
     this.refreshPinnedGenes();
   }
 
@@ -902,7 +902,7 @@ export class GeneComparisonToolComponent implements OnInit, AVI, OnDestroy {
     if (this.category === 'RNA - Differential Expression')
       return this.pinnedItems.length >= this.maxPinnedGenes;
     else {
-      // default to showing pin all button for protein view
+      // default to showing pin/pin all button for protein view
       return false;
     }
   }

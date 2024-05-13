@@ -120,10 +120,14 @@ export class GeneNominatedTargetsComponent implements OnInit {
         inputDataArray = this.commaFlattenArray(inputDataArray);
 
         // Populate targetNomination display fields
-        de.teams_display_value = this.formatDisplayValue(teamsArray);
-        de.study_display_value = this.formatDisplayValue(studyArray);
-        de.programs_display_value = this.formatDisplayValue(programsArray);
-        de.input_data_display_value = this.formatDisplayValue(inputDataArray);
+        de.teams_display_value =
+          this.getCommaSeparatedStringOfUniqueSortedValues(teamsArray);
+        de.study_display_value =
+          this.getCommaSeparatedStringOfUniqueSortedValues(studyArray);
+        de.programs_display_value =
+          this.getCommaSeparatedStringOfUniqueSortedValues(programsArray);
+        de.input_data_display_value =
+          this.getCommaSeparatedStringOfUniqueSortedValues(inputDataArray);
 
         de.initial_nomination_display_value = initialNominationArray.length
           ? Math.min(...initialNominationArray)
@@ -176,7 +180,7 @@ export class GeneNominatedTargetsComponent implements OnInit {
     return finalArray;
   }
 
-  formatDisplayValue(inputArray: string[]) {
+  getCommaSeparatedStringOfUniqueSortedValues(inputArray: string[]) {
     let display_value = '';
     if (inputArray.length) {
       display_value = inputArray

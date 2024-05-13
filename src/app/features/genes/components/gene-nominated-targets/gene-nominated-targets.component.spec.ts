@@ -126,10 +126,12 @@ describe('Component: Gene Nominated Targets', () => {
   it('should correctly format display values', () => {
     setUp([]);
 
-    expect(component.formatDisplayValue([])).toEqual('');
+    expect(
+      component.getCommaSeparatedStringOfUniqueSortedValues([])
+    ).toEqual('');
 
     expect(
-      component.formatDisplayValue([
+      component.getCommaSeparatedStringOfUniqueSortedValues([
         'ACT',
         'BLSA',
         'Banner',
@@ -140,7 +142,16 @@ describe('Component: Gene Nominated Targets', () => {
     ).toEqual('ACT, Banner, BLSA');
 
     expect(
-      component.formatDisplayValue(['Z', 'Y', 'X', 'A', 'B', 'C', 'B', 'C'])
+      component.getCommaSeparatedStringOfUniqueSortedValues([
+        'Z',
+        'Y',
+        'X',
+        'A',
+        'B',
+        'C',
+        'B',
+        'C',
+      ])
     ).toEqual('A, B, C, X, Y, Z');
   });
 });

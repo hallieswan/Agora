@@ -130,7 +130,7 @@ test.describe('GCT: Caching pinned genes', () => {
     });
   });
 
-  test.fail(
+  test(
     'Pinned proteins are maintained when switching between Protein subcategories',
     async ({ page }) => {
       const gene1 = geneWithMultipleProteinsTMT.name;
@@ -154,9 +154,7 @@ test.describe('GCT: Caching pinned genes', () => {
       }
 
       await test.step('confirm # genes and proteins pinned on Protein page', async () => {
-        // FIXME - will fail until gene count is separated from protein count (AG-1425)
         await expectPinnedGenesCountText(page, nGenes);
-        // FIXME - will fail until protein count is displayed (AG-1425)
         await expectPinnedProteinsCountText(page, nProteins);
         await confirmPinnedItemsCount(page, nProteins);
       });
@@ -184,9 +182,7 @@ test.describe('GCT: Caching pinned genes', () => {
       );
 
       await test.step('confirm same genes and proteins pinned on Protein page', async () => {
-        // FIXME - will fail until gene count is separated from protein count (AG-1425)
         await expectPinnedGenesCountText(page, nGenes);
-        // FIXME - will fail until protein count is displayed (AG-1425)
         await expectPinnedProteinsCountText(page, nProteins);
         await confirmPinnedItemsCount(page, nProteins);
 
@@ -196,7 +192,7 @@ test.describe('GCT: Caching pinned genes', () => {
     }
   );
 
-  test.fail(
+  test(
     'Pinned proteins are maintained when switching categories: Protein -> RNA -> Protein',
     async ({ page }) => {
       const gene1 = geneWithMultipleProteinsTMT.name;
@@ -220,9 +216,7 @@ test.describe('GCT: Caching pinned genes', () => {
       }
 
       await test.step('confirm # genes and proteins pinned on Protein page', async () => {
-        // FIXME - will fail until gene count is separated from protein count (AG-1425)
         await expectPinnedGenesCountText(page, nGenes);
-        // FIXME - will fail until protein count is displayed (AG-1425)
         await expectPinnedProteinsCountText(page, nProteins);
         await confirmPinnedItemsCount(page, nProteins);
       });
@@ -248,13 +242,9 @@ test.describe('GCT: Caching pinned genes', () => {
       );
 
       await test.step('confirm same genes and proteins pinned on Protein page', async () => {
-        // FIXME - will fail until gene count is separated from protein count (AG-1425)
         await expectPinnedGenesCountText(page, nGenes);
-        // FIXME - will fail until protein count is displayed (AG-1425)
         await expectPinnedProteinsCountText(page, nProteins);
 
-        // FIXME - the following steps will fail until the protein cache is maintained
-        // ...when switching from Protein -> RNA -> Protein (AG-1425)
         await confirmPinnedItemsCount(page, nProteins);
         await confirmPinnedProteins(page, gene1, proteins1);
         await confirmPinnedProteins(page, gene2, proteins2);
@@ -262,7 +252,7 @@ test.describe('GCT: Caching pinned genes', () => {
     }
   );
 
-  test.fail(
+  test(
     'Last pinned genes are maintained even if proteins were pinned initially',
     async ({ page }) => {
       const rnaCategoryGene = geneWithMultipleProteinsTMT.name;
@@ -312,11 +302,8 @@ test.describe('GCT: Caching pinned genes', () => {
           GCT_PROTEIN_SUBCATEGORIES.SRM,
           GCT_PROTEIN_SUBCATEGORIES.TMT
         );
-        // FIXME - will fail until gene count is separated from protein count (AG-1425)
         await expectPinnedGenesCountText(page, 1);
-        // FIXME - will fail until protein count is displayed (AG-1425)
         await expectPinnedProteinsCountText(page, rnaCategoryProteins.length);
-        // FIXME - will fail until all proteins for a gene are pinned (AG-1425)
         await confirmPinnedProteins(page, rnaCategoryGene, rnaCategoryProteins);
       });
 
@@ -335,7 +322,7 @@ test.describe('GCT: Caching pinned genes', () => {
     }
   );
 
-  test.fail(
+  test(
     'Last pinned proteins are maintained even if genes were pinned initially',
     async ({ page }) => {
       const rnaCategoryGene = geneWithMultipleProteinsTMT.name;
@@ -375,9 +362,7 @@ test.describe('GCT: Caching pinned genes', () => {
         await pinAllItemsViaSearchByGene(page, proteinCategoryGene);
 
         await test.step('confirm pinned items', async () => {
-          // FIXME - will fail until gene count is separated from protein count (AG-1425)
           await expectPinnedGenesCountText(page, 1);
-          // FIXME - will fail until protein count is displayed (AG-1425)
           await expectPinnedProteinsCountText(
             page,
             proteinCategoryProteins.length
@@ -414,9 +399,7 @@ test.describe('GCT: Caching pinned genes', () => {
         );
 
         await test.step('confirm pinned items', async () => {
-          // FIXME - will fail until gene count is separated from protein count (AG-1425)
           await expectPinnedGenesCountText(page, 1);
-          // FIXME - will fail until protein count is displayed (AG-1425)
           await expectPinnedProteinsCountText(
             page,
             proteinCategoryProteins.length

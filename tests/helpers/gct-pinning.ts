@@ -28,13 +28,15 @@ export const expectPinnedProteinsCountText = async (
   page: Page,
   nProteins: number
 ) => {
-  await expect(page.getByText(`Pinned Proteins (${nProteins})`)).toBeVisible();
+  await expect(
+    page.getByText(`${nProteins} Protein${nProteins > 1 ? 's' : ''}`)
+  ).toBeVisible();
 };
 
 export const expectTooManyPinnedGenesToast = async (page: Page) => {
   const alert = page.getByRole('alert');
   await expect(alert).toHaveText(
-    'Only 50 genes were added, because you reached the maxium of 50 pinned genes. '
+    'Only 50 rows were added, because you reached the maximum of 50 pinned Ensembl identifiers.'
   );
 };
 

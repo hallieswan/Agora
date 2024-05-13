@@ -403,7 +403,7 @@
                 <div *ngIf="genesTable.filteredValue?.length">
                   <button
                     class="pin-all-button"
-                    [disabled]="pinnedItems.length >= maxPinnedGenes"
+                    [disabled]="getPinDisabledStatus()"
                     [ngClass]="{
                       disabled: getPinDisabledStatus()
                     }"
@@ -472,7 +472,7 @@
                       <div>
                         <button
                           (click)="onPinGeneClick(gene)"
-                          [disabled]="pinnedItems.length >= maxPinnedGenes"
+                          [disabled]="getPinDisabledStatus()"
                           [ngClass]="{
                             disabled: getPinDisabledStatus()
                           }"

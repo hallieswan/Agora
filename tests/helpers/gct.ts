@@ -87,7 +87,7 @@ const changeGctDropdown = async (
     await test.step('wait for page to redirect', async () => {
       await expect(() => {
         expect(page.url()).not.toEqual(url);
-      }).toPass({ timeout: 45_000 });
+      }).toPass({ timeout: 60_000 });
     });
 
     // Handle case where listbox doesn't close after page redirects

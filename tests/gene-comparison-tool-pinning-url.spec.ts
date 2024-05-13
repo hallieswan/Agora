@@ -15,7 +15,6 @@ import {
 } from './helpers/data';
 import { expectGctPageLoaded, getGeneRowButtons } from './helpers/gct';
 import {
-  closePinnedGeneWarningModal,
   confirmPinnedItemsByGeneName,
   confirmPinnedItemsCount,
   expectPinnedGenesCountText,
@@ -141,7 +140,13 @@ test.describe('GCT: Pinning Genes from URL', () => {
     });
   });
 
-  test('when RNA url includes proteins, the related gene is pinned', async ({
+  test.fail('when RNA url includes proteins, the related gene is pinned', {
+    annotation: {
+      type: 'fail', 
+      description: 'Since AG-1425, only genes will be pinned from RNA url'
+    }
+  },
+  async ({
     page,
   }) => {
     const geneProteins = geneWithMultipleProteinsTMT.uniProtIds.map(
@@ -166,7 +171,12 @@ test.describe('GCT: Pinning Genes from URL', () => {
   });
 
   test.fail(
-    'when Protein url includes a gene, all related proteins are pinned',
+    'when Protein url includes a gene, all related proteins are pinned', {
+      annotation: {
+        type: 'fail', 
+        description: 'Since AG-1425, only proteins will be pinned from Protein url'
+      }
+    },
     async ({ page }) => {
       const url = `${URL_GCT_PROTEIN_TMT}&${formatPinnedGenesQueryParam([
         geneWithMultipleProteinsTMT.ensemblId,
@@ -184,7 +194,6 @@ test.describe('GCT: Pinning Genes from URL', () => {
         geneWithMultipleProteinsTMT.uniProtIds.length
       );
 
-      // FIXME - will fail until protein counts are separated from gene counts (AG-1425)
       await test.step('confirm counts', async () => {
         await confirmPinnedItemsCount(page, 5);
         await expectPinnedGenesCountText(page, 1);
@@ -193,7 +202,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     }
   );
 
-  test.fail(
+  test(
     'when Protein url includes 50 proteins from 50 unique genes, all proteins are pinned',
     async ({ page }) => {
       const url = `${URL_GCT_PROTEIN_TMT}&${formatPinnedGenesQueryParam(
@@ -209,13 +218,12 @@ test.describe('GCT: Pinning Genes from URL', () => {
       await test.step('confirm counts', async () => {
         await confirmPinnedItemsCount(page, 50);
         await expectPinnedGenesCountText(page, 50);
-        // FIXME - will fail until protein counts are separated from gene counts (AG-1425)
         await expectPinnedProteinsCountText(page, 50);
       });
     }
   );
 
-  test.fail(
+  test(
     'when Protein url includes >50 proteins from 50 unique genes, all proteins are pinned',
     async ({ page }) => {
       const fortyNineProteinsToUniqueGenes =
@@ -234,10 +242,6 @@ test.describe('GCT: Pinning Genes from URL', () => {
 
       await page.goto(url);
 
-      // FIXME - remove this step once pinning is fixed so that modal does not
-      // appear when >50 proteins are pinned for 50 unique genes (AG-1425)
-      await closePinnedGeneWarningModal(page);
-
       await expectGctPageLoaded(
         page,
         GCT_CATEGORIES.PROTEIN,
@@ -246,9 +250,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
 
       await test.step('confirm counts', async () => {
         await expectPinnedGenesCountText(page, 50);
-        // FIXME - will fail until >50 proteins can be pinned for 50 unique genes (AG-1425)
         await confirmPinnedItemsCount(page, allProteins.length);
-        // FIXME - will fail until protein counts are separated from gene counts (AG-1425)
         await expectPinnedProteinsCountText(page, allProteins.length);
       });
 
@@ -260,7 +262,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     }
   );
 
-  test.fail(
+  test(
     'when Protein url includes proteins from 51 unique genes, only proteins from 50 genes are pinned',
     async ({ page }) => {
       const oneGeneWithManyProteins =
@@ -282,8 +284,6 @@ test.describe('GCT: Pinning Genes from URL', () => {
 
       await page.goto(url);
 
-      await closePinnedGeneWarningModal(page);
-
       await expectGctPageLoaded(
         page,
         GCT_CATEGORIES.PROTEIN,
@@ -292,9 +292,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
 
       await test.step('confirm counts', async () => {
         await expectPinnedGenesCountText(page, 50);
-        // FIXME - will fail until >50 proteins can be pinned for 50 unique genes (AG-1425)
         await confirmPinnedItemsCount(page, expectedPinnedProteins.length);
-        // FIXME - will fail until protein counts are separated from gene counts (AG-1425)
         await expectPinnedProteinsCountText(
           page,
           expectedPinnedProteins.length
@@ -303,7 +301,7 @@ test.describe('GCT: Pinning Genes from URL', () => {
     }
   );
 
-  test.fail(
+  test(
     'when Protein url includes invalid protein, that protein is dropped from the url',
     async ({ page }) => {
       const validGeneProtein = fiftyProteinsToFiftyUniqueGenesTMT[1];
@@ -326,7 +324,6 @@ test.describe('GCT: Pinning Genes from URL', () => {
       await test.step('confirm only pinned 1 protein', async () => {
         await expectPinnedGenesCountText(page, 1);
         await confirmPinnedItemsCount(page, 1);
-        // FIXME - will fail until pinned protein text is added (AG-1425)
         await expectPinnedProteinsCountText(page, 1);
       });
 

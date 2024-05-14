@@ -48,8 +48,8 @@ describe('Component: GeneComparisonToolComponent', () => {
   let element: HTMLElement;
   let route: ActivatedRoute;
 
-  beforeEach(fakeAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(fakeAsync(async () => {
+    await TestBed.configureTestingModule({
       declarations: [
         GeneComparisonToolComponent,
         GeneComparisonToolDetailsPanelComponent,

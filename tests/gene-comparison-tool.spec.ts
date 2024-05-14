@@ -1,27 +1,33 @@
 import { test, expect } from '@playwright/test';
-import { URL_GCT_PROTEIN } from './helpers/constants';
+import { GCT_CATEGORIES, URL_GCT_PROTEIN } from './helpers/constants';
 import { waitForSpinnerNotVisible } from './helpers/utils';
+import { baseURL } from '../playwright.config';
+import { changeGctCategory, closeGctHelpDialog } from './helpers/gct';
+
+const URL_GCT = '/genes/comparison';
+const URL_RNA = '/genes/comparison?';
+const URL_PROTEIN = '/genes/comparison?category=Protein+-+Differential+Expression';
 
 test.describe('specific viewport block', () => {
   test.slow();
   test.use({ viewport: { width: 1600, height: 1200 } });
 
   test('has title', async ({ page }) => {
-    await page.goto(URL_GCT_PROTEIN);
+    await page.goto(`${ URL_GCT }`);
 
     // wait for page to load (i.e. spinner to disappear)
-    await waitForSpinnerNotVisible(page, 250000);
+    await waitForSpinnerNotVisible(page, 250_000);
 
     // Expect a title "to contain" a substring.
     await expect(page).toHaveTitle('Gene Comparison | Visual comparison tool for AD genes');
   });
 
-  test('sub-category is SRM by default', async ({ page }) => {
+  test('protein has sub-category of SRM by default', async ({ page }) => {
     // set category for Protein - Differential Expression
     await page.goto(URL_GCT_PROTEIN);
 
     // wait for page to load (i.e. spinner to disappear)
-    await waitForSpinnerNotVisible(page, 150000);
+    await waitForSpinnerNotVisible(page, 150_000);
   
     // expect sub-category dropdown to be SRM
     const dropdown = page.locator('#subCategory');
@@ -29,23 +35,21 @@ test.describe('specific viewport block', () => {
   });
 
   test('switching from RNA to Protein with RNA-specific column ordering reverts back to Risk Score descending', async ({ page }) => {
-    // set category for Protein - Differential Expression
-    await page.goto('/genes/comparison?sortField=FP&sortOrder=1');
+    // set category to RNA
+    await page.goto(`${ URL_RNA }`);
 
     // wait for page to load (i.e. spinner to disappear)
-    await expect(page.locator('div:nth-child(4) > div > .spinner'))
-      .not.toBeVisible({ timeout: 150000});
+    await waitForSpinnerNotVisible(page, 150_000);
 
     // Gene Comparison Overview tutorial modal
     const tutorialModal = page.getByText('Gene Comparison Overview');
-    await expect(tutorialModal).toBeVisible({ timeout: 10000});
+    await expect(tutorialModal).toBeVisible({ timeout: 10_000});
 
     // close the Gene Comparison Overview tutorial modal
-    const closeButton = page.locator('.p-dialog-header-close-icon');
-    await closeButton.click();
+    await closeGctHelpDialog(page);
 
     // Gene Comparison Overview tutorial modal
-    await expect(tutorialModal).not.toBeVisible({ timeout: 10000});
+    await expect(tutorialModal).not.toBeVisible({ timeout: 10_000});
 
     // sort by FP ascending
     const FPColumn = page.getByText('FP');
@@ -55,14 +59,13 @@ test.describe('specific viewport block', () => {
     await FPColumn.click();
 
     // expect url to be correct
-    expect(page.url()).toBe('http://localhost:8080/genes/comparison?sortField=FP&sortOrder=1');
+    expect(page.url()).toBe(`${ baseURL }${ URL_RNA }sortField=FP&sortOrder=1`);
 
     // change category to Protein
-    await page.locator('p-dropdown').filter({ hasText: 'RNA - Differential Expression' }).getByLabel('dropdown trigger').click();
-    await page.getByText('Protein - Differential Expression').click();
+    await changeGctCategory(page, GCT_CATEGORIES.RNA, GCT_CATEGORIES.PROTEIN);
 
     // expect url to be correct
-    expect(page.url()).toBe('http://localhost:8080/genes/comparison?category=Protein+-+Differential+Expression');
+    expect(page.url()).toBe(`${ baseURL }${ URL_PROTEIN }`);
 
     // expect sort arrow to be descending
     await expect(

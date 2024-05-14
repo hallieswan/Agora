@@ -138,6 +138,8 @@ export class GeneDetailsComponent implements OnInit, AfterViewInit {
           .subscribe((gene) => {
             if (!gene) {
               this.helperService.setLoading(false);
+              // https://github.com/angular/angular/issues/45202
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               this.router.navigateByUrl('/404-not-found', { skipLocationChange: true });
             } else {
               this.gene = gene;

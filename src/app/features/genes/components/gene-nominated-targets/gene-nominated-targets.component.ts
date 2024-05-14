@@ -97,9 +97,9 @@ export class GeneNominatedTargetsComponent implements OnInit {
         // First map all entries nested in the data to a new array
         if (de.target_nominations?.length) {
           teamsArray = de.target_nominations.map((nt: TargetNomination) => nt.team);
-          studyArray = de.target_nominations
-            .map((nt: TargetNomination) => nt.study)
-            .filter((item) => Boolean(item)) as string[];
+          studyArray = this.removeNullAndEmptyStrings(
+            de.target_nominations.map((nt: TargetNomination) => nt.study)
+          );
           programsArray = de.target_nominations.map(
             (nt: TargetNomination) => nt.source
           );
@@ -160,6 +160,10 @@ export class GeneNominatedTargetsComponent implements OnInit {
 
       this.genes = genes;
     });
+  }
+
+  removeNullAndEmptyStrings(items: (string | null)[]) {
+    return items.filter((item) => Boolean(item)) as string[];
   }
 
   getUnique(value: string, index: number, self: any) {

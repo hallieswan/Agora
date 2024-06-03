@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - AG-1471
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    environment: e2e
+    env:
+      CI: true
+      PACKAGE_JSON_PATH: "package.json"
+    steps:
+      - uses: actions/checkout@v4
+      - name: set data manifest id and version
+        id: data-manifest
+        run: |
+          DATA_MANIFEST_ID=$(jq -r '."data-file"' "${{ env.PACKAGE_JSON_PATH }}")
+          echo "DATA_MANIFEST_ID=${DATA_MANIFEST_ID}" >> "$GITHUB_ENV"
+
+          DATA_VERSION=$(jq -r '."data-version"' "${{ env.PACKAGE_JSON_PATH }}")
+          echo "DATA_VERSION=${DATA_VERSION}" >> "$GITHUB_ENV"
+      - name: check whether image exists
+        id: image-exists
+        run: |
+          echo "TODO - check if image exists:"
+          echo "data manifest id: ${{ env.DATA_MANIFEST_ID }}"
+          echo "data version: ${{ env.DATA_VERSION }}"
+          echo "IMAGE_EXISTS=false" >> "$GITHUB_ENV"

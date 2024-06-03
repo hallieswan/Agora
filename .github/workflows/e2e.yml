@@ -27,3 +27,27 @@ jobs:
           echo "data manifest id: ${{ env.DATA_MANIFEST_ID }}"
           echo "data version: ${{ env.DATA_VERSION }}"
           echo "IMAGE_EXISTS=false" >> "$GITHUB_ENV"
+      # https://github.com/actions/setup-python/issues/807
+      - name: create placeholder requirements.txt file
+        run: touch ./requirements.txt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
+          cache: 'pip'
+      - name: install synapseclient
+        run: |
+          pip install --upgrade synapseclient
+      - name: download data from synapse
+        env: 
+          DATA_DIR: './data'
+          TEAM_IMAGES_DIR: './data/team_images'
+          SYNAPSE_AUTH_TOKEN: ${{ secrets.SYNAPSE_AUTH_TOKEN }}
+        run: |
+          # make directory for team images
+          mkdir -p "${{ env.TEAM_IMAGES_DIR }}"
+
+          echo "check synapse download"
+          synapse get --downloadLocation "${{ env.DATA_DIR }}" -v "1" "syn53701297"
+
+          echo "list files"
+          ls "${{ env.DATA_DIR }}"

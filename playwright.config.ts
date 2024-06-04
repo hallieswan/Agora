@@ -14,7 +14,7 @@ export const baseURL = 'http://localhost:8080';
 export default defineConfig({
   testDir: './tests',
   // timeout for every test
-  timeout: 25 * 60 * 1000,
+  timeout: 3 * 60 * 1000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -76,6 +76,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run start',
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
+    timeout: 120 * 1000,
   },
 });

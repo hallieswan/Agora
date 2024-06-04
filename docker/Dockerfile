@@ -4,7 +4,7 @@ FROM mongo:latest
 ARG LOCAL_DATA_PATH="./local/data" 
 ARG LOCAL_COLLECTIONS_PATH="./scripts/collections.csv"
 ARG LOCAL_IMPORT_SCRIPT_PATH="./docker/import-data.sh"
-ARG LOCAL_CREATE_INDEXES_PATH="./scripts/mongo-create-indexes.js"
+ARG LOCAL_CREATE_INDEXES_PATH="./scripts/mongo-create-Indexes.js"
 
 # Paths within the image
 ENV DATA_DIR="input_data"

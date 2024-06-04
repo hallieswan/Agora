@@ -5,7 +5,7 @@ on:
 
 jobs:
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: e2e
     env:
       CI: true
@@ -13,7 +13,7 @@ jobs:
       LOCAL_TEAM_IMAGES_DIR: './local/data/team_images'
       LOCAL_COLLECTIONS_PATH: "./scripts/collections.csv"
       LOCAL_IMPORT_SCRIPT_PATH: "./docker/import-data.sh"
-      LOCAL_CREATE_INDEXES_PATH: "./scripts/mongo-create-indexes.js"
+      LOCAL_CREATE_INDEXES_PATH: "./scripts/mongo-create-Indexes.js"
       DOCKER_COMPOSE_PATH: './docker/docker-compose.yml'
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
       - name: check whether image exists
         id: image-exists
         run: |
-          echo "data image tag: ${{ env.DATA_IMAGE_TAG }}"
+          echo "==> data image tag: ${{ env.DATA_IMAGE_TAG }}"
           echo "IMAGE_EXISTS=false" >> "$GITHUB_ENV"
       # TODO - move into job which conditionally runs based on IMAGE_EXISTS
       # https://github.com/actions/setup-python/issues/807
@@ -42,28 +42,29 @@ jobs:
         run: touch ./requirements.txt
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.9'
           cache: 'pip'
       - name: install synapseclient
         run: |
           pip install --upgrade synapseclient
       - name: download data from synapse
+        timeout-minutes: 10
         env:
           SYNAPSE_AUTH_TOKEN: ${{ secrets.SYNAPSE_AUTH_TOKEN }}
         run: |
-          echo "make directory for team images"
+          echo "==> make directory for team images"
           mkdir -p "${{ env.LOCAL_TEAM_IMAGES_DIR }}"
 
-          echo "download manifest file from Synapse"
+          echo "==> download manifest file from Synapse"
           synapse get --downloadLocation "${{ env.LOCAL_DATA_PATH }}" -v "${{ env.DATA_VERSION }}" "${{ env.DATA_MANIFEST_ID }}"
           
-          echo "download all files referenced in manifest from Synapse"
+          echo "==> download all files referenced in manifest from Synapse"
           cat "${{ env.LOCAL_DATA_PATH }}"/data_manifest.csv | tail -n +2 | while IFS=, read -r id version; do
-            echo Downloading "${id}","${version}"
-              synapse get --downloadLocation "${{ env.LOCAL_DATA_PATH }}" -v "${version}" "${id}" ;
+              echo "===> Downloading ${id}.${version}"
+              synapse get --downloadLocation "${{ env.LOCAL_DATA_PATH }}" -v "${version}" "${id}"
             done
 
-          echo "download team images"
+          echo "==> download team images"
           synapse get -r --downloadLocation "${{ env.LOCAL_TEAM_IMAGES_DIR }}/" "${{ vars.TEAM_IMAGES_ID }}"
       - name: build image
         env: 
@@ -80,6 +81,13 @@ jobs:
       # TODO - push image to remote repository
 
       # TODO - move into job that pulls image from remote repository 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: npm install
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
       - name: start database, server, and app
         env: 
           DB_USER: ${{ secrets.DB_USER }}
@@ -87,32 +95,27 @@ jobs:
           DB_PORT: ${{ vars.DB_PORT }}
           DB_NAME: ${{ vars.DB_NAME }}
         run: |
-          echo "start database and data containers"
+          echo "==> start database and data containers"
           docker-compose -f "${{ env.DOCKER_COMPOSE_PATH }}" up -d
 
-          echo "wait for data container to finish seeding database container"
+          echo "==> wait for data container to finish seeding database container"
           DATA_CONTAINER=$(docker compose -f "${{ env.DOCKER_COMPOSE_PATH }}" ps -a --format '{{.Name}}' mongo-seed)
           docker wait "${DATA_CONTAINER}"
 
-          echo "start server and app in background and wait for server to grab port"
+          echo "==> start server and app in background and wait for server to grab port"
           MONGODB_HOST="localhost" MONGODB_PORT="${{ env.DB_PORT }}" APP_ENV="e2e" npm run dev >/dev/null 2>&1 &
           sleep 2
-      - name: run e2e tests
-        run: npm run e2e tests/similar-genes.spec.ts
-      - name: clean up database, server, and app
-        env: 
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          DB_PORT: ${{ vars.DB_PORT }}
-          DB_NAME: ${{ vars.DB_NAME }}
-        run: |
-          echo "stop app"
+
+          echo "==> run e2e tests"
+          npm run e2e tests/similar-genes.spec.ts
+          
+          echo "==> stop app"
           pid=$(lsof -i :3000 -t) && kill ${pid}
 
-          echo "stop server"
+          echo "==> stop server"
           pid=$(lsof -i :8080 -t) && kill ${pid}
 
-          echo "stop database"
+          echo "==> stop database"
           docker-compose -f "${{ env.DOCKER_COMPOSE_PATH }}" down
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

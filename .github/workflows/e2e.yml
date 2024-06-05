@@ -1,0 +1,74 @@
+on:
+  push:
+    branches:
+      - AG-1471_AG-1473_AG-1474
+
+jobs:
+  e2e:
+    runs-on: ubuntu-20.04
+    environment: e2e
+    env:
+      CI: true
+      LOCAL_DATA_PATH: './local/data'
+      LOCAL_TEAM_IMAGES_DIR: './local/data/team_images'
+      LOCAL_COLLECTIONS_PATH: './scripts/collections.csv'
+      LOCAL_IMPORT_SCRIPT_PATH: './docker/import-data.sh'
+      LOCAL_CREATE_INDEXES_PATH: './scripts/mongo-create-Indexes.js'
+      DOCKER_COMPOSE_PATH: './docker/docker-compose.yml'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: get data image tag, data manifest id, and data version
+        env:
+          PACKAGE_JSON_PATH: 'package.json'
+          DATA_IMAGE_NAME: '${{ vars.DB_NAME }}/data'
+        run: |
+          DATA_MANIFEST_ID=$(jq -r '."data-file"' "${{ env.PACKAGE_JSON_PATH }}")
+          echo "DATA_MANIFEST_ID=${DATA_MANIFEST_ID}" >> "$GITHUB_ENV"
+
+          DATA_VERSION=$(jq -r '."data-version"' "${{ env.PACKAGE_JSON_PATH }}")
+          echo "DATA_VERSION=${DATA_VERSION}" >> "$GITHUB_ENV"
+
+          DATA_IMAGE_TAG="${{ env.DATA_IMAGE_NAME }}:${DATA_MANIFEST_ID}-v${DATA_VERSION}"
+          echo "DATA_IMAGE_TAG=${DATA_IMAGE_TAG}" >> "$GITHUB_ENV"
+
+      # TODO - check remote repository
+      - name: check whether image exists
+        id: image-exists
+        run: |
+          echo "==> data image tag: ${{ env.DATA_IMAGE_TAG }}"
+          echo "IMAGE_EXISTS=false" >> "$GITHUB_ENV"
+
+          # TODO - move into job which conditionally runs based on IMAGE_EXISTS
+      # https://github.com/actions/setup-python/issues/807
+      - name: create placeholder requirements.txt file
+        run: touch ./requirements.txt
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: install synapseclient
+        run: |
+          pip install --upgrade synapseclient
+
+      - name: download data from synapse
+        timeout-minutes: 10
+        env:
+          SYNAPSE_AUTH_TOKEN: ${{ secrets.SYNAPSE_AUTH_TOKEN }}
+        run: |
+          echo "==> make directory for team images"
+          mkdir -p "${{ env.LOCAL_TEAM_IMAGES_DIR }}"
+
+          echo "==> download manifest file from Synapse"
+          synapse get --downloadLocation "${{ env.LOCAL_DATA_PATH }}" -v "${{ env.DATA_VERSION }}" "${{ env.DATA_MANIFEST_ID }}"
+
+          echo "==> download all files referenced in manifest from Synapse"
+          cat "${{ env.LOCAL_DATA_PATH }}"/data_manifest.csv | tail -n +2 | while IFS=, read -r id version; do
+              echo "===> Downloading ${id}.${version}"
+              synapse get --downloadLocation "${{ env.LOCAL_DATA_PATH }}" -v "${version}" "${id}"
+            done
+
+          echo "==> download team images"
+          synapse get -r --downloadLocation "${{ env.LOCAL_TEAM_IMAGES_DIR }}/" "${{ vars.TEAM_IMAGES_ID }}"

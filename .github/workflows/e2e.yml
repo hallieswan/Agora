@@ -1,10 +1,14 @@
+name: Build Data Image and Run End-to-end Tests
+
 on:
   push:
-    branches:
-      - AG-1471_AG-1473_AG-1474
+    branches: [ develop, main ]
+  pull_request:
+    branches: [ develop, main ]
 
 jobs:
   e2e:
+    timeout-minutes: 60
     runs-on: ubuntu-20.04
     environment: e2e
     env:
@@ -39,7 +43,7 @@ jobs:
           echo "==> data image tag: ${{ env.DATA_IMAGE_TAG }}"
           echo "IMAGE_EXISTS=false" >> "$GITHUB_ENV"
 
-          # TODO - move into job which conditionally runs based on IMAGE_EXISTS
+      # TODO - move into job which conditionally runs based on IMAGE_EXISTS
       # https://github.com/actions/setup-python/issues/807
       - name: create placeholder requirements.txt file
         run: touch ./requirements.txt
@@ -86,3 +90,58 @@ jobs:
           --build-arg LOCAL_CREATE_INDEXES_PATH="${{ env.LOCAL_CREATE_INDEXES_PATH }}" \
           .
       # TODO - push image to remote repository
+
+      # TODO - move into job that pulls image from remote repository
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: install dependencies
+        run: npm install
+
+      - name: install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: start database, server, and app
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_PORT: ${{ vars.DB_PORT }}
+          DB_NAME: ${{ vars.DB_NAME }}
+        run: |
+          echo "==> start database and data containers"
+          docker-compose -f "${{ env.DOCKER_COMPOSE_PATH }}" up -d
+
+          echo "==> wait for data container to finish seeding database container"
+          DATA_CONTAINER=$(docker compose -f "${{ env.DOCKER_COMPOSE_PATH }}" ps -a --format '{{.Name}}' mongo-seed)
+          docker wait "${DATA_CONTAINER}"
+
+          echo "==> start server and app in background and wait for server to grab port"
+          MONGODB_HOST="localhost" MONGODB_PORT="${{ env.DB_PORT }}" APP_ENV="e2e" npm run dev >/dev/null 2>&1 &
+          sleep 5
+
+      - name: run e2e tests
+        run: npx playwright test
+
+      - name: clean up database, server, and app
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_PORT: ${{ vars.DB_PORT }}
+          DB_NAME: ${{ vars.DB_NAME }}
+        run: |
+          echo "==> stop app"
+          pid=$(lsof -i :3000 -t) && kill ${pid}
+
+          echo "==> stop server"
+          pid=$(lsof -i :8080 -t) && kill ${pid}
+
+          echo "==> stop database"
+          docker-compose -f "${{ env.DOCKER_COMPOSE_PATH }}" down
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 5

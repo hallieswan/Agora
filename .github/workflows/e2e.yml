@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: get data image tag, data manifest id, and data version
+      - name: get data image tag, data manifest id, data version, and team images id
         env:
           PACKAGE_JSON_PATH: 'package.json'
           DATA_IMAGE_NAME: '${{ vars.DB_NAME }}/data'
@@ -28,6 +28,9 @@ jobs:
 
           DATA_VERSION=$(jq -r '."data-version"' "${{ env.PACKAGE_JSON_PATH }}")
           echo "DATA_VERSION=${DATA_VERSION}" >> "$GITHUB_ENV"
+
+          TEAM_IMAGES_ID=$(jq -r '."team-images-file"' "${{ env.PACKAGE_JSON_PATH }}")
+          echo "TEAM_IMAGES_ID=${TEAM_IMAGES_ID}" >> "$GITHUB_ENV"
 
           DATA_IMAGE_TAG="${{ env.DATA_IMAGE_NAME }}:${DATA_MANIFEST_ID}-v${DATA_VERSION}"
           echo "DATA_IMAGE_TAG=${DATA_IMAGE_TAG}" >> "$GITHUB_ENV"
@@ -71,7 +74,7 @@ jobs:
             done
 
           echo "==> download team images"
-          synapse get -r --downloadLocation "${{ env.LOCAL_TEAM_IMAGES_DIR }}/" "${{ vars.TEAM_IMAGES_ID }}"
+          synapse get -r --downloadLocation "${{ env.LOCAL_TEAM_IMAGES_DIR }}/" "${{ env.TEAM_IMAGES_ID }}"
 
       - name: build image
         env:

@@ -72,3 +72,17 @@ jobs:
 
           echo "==> download team images"
           synapse get -r --downloadLocation "${{ env.LOCAL_TEAM_IMAGES_DIR }}/" "${{ vars.TEAM_IMAGES_ID }}"
+
+      - name: build image
+        env:
+          DOCKERFILE_PATH: './docker/Dockerfile'
+        run: |
+          docker build \
+          -t "${{ env.DATA_IMAGE_TAG }}" \
+          -f "${{ env.DOCKERFILE_PATH }}" \
+          --build-arg LOCAL_DATA_PATH="${{ env.LOCAL_DATA_PATH }}" \
+          --build-arg LOCAL_COLLECTIONS_PATH="${{ env.LOCAL_COLLECTIONS_PATH }}" \
+          --build-arg LOCAL_IMPORT_SCRIPT_PATH="${{ env.LOCAL_IMPORT_SCRIPT_PATH }}" \
+          --build-arg LOCAL_CREATE_INDEXES_PATH="${{ env.LOCAL_CREATE_INDEXES_PATH }}" \
+          .
+      # TODO - push image to remote repository

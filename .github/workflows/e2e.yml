@@ -1,13 +1,12 @@
 name: Build Data Image and Run End-to-end Tests
 
-on:
-  push:
-    branches: [ develop, main ]
-  pull_request:
-    branches: [ develop, main ]
+on: push
 
 jobs:
   e2e:
+    # Run in Sage repo on develop or main branches
+    # and on all branches in user-owned forks
+    if: ${{ github.ref_name == 'develop' || github.ref_name == 'main' || github.actor == github.repository_owner }}
     timeout-minutes: 60
     runs-on: ubuntu-20.04
     environment: e2e

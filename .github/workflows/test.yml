@@ -8,6 +8,8 @@ on:
 jobs:
   test: 
     runs-on: ubuntu-20.04
+    permissions:
+      packages: write
     env: 
       DOCKER_IMAGE_PATH: "ghcr.io/hallieswan/agora/data:test2"
     steps:

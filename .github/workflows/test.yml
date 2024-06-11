@@ -1,0 +1,25 @@
+name: Test GHCR
+
+on: 
+  push:
+    branches:
+      [ test-ghcr ]
+
+jobs:
+  test: 
+    runs-on: ubuntu-20.04
+    env: 
+      DOCKER_IMAGE_PATH: "ghcr.io/hallieswan/agora/data:test2"
+    steps:
+      - uses: actions/checkout@v4
+      - name: login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: build image
+        run: docker build -t "${{ env.DOCKER_IMAGE_PATH }}" .
+      - name: push to GitHub Container Registry
+        run: docker push "${{ env.DOCKER_IMAGE_PATH }}"
+  

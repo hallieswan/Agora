@@ -11,7 +11,7 @@ jobs:
     permissions:
       packages: write
     env: 
-      DOCKER_IMAGE_PATH: "ghcr.io/hallieswan/agora/data:test2"
+      DOCKER_IMAGE_PATH: "ghcr.io/sage-bionetworks/agora/data:test"
     steps:
       - uses: actions/checkout@v4
       - name: login to GitHub Container Registry
@@ -20,8 +20,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: build image
-        run: docker build -t "${{ env.DOCKER_IMAGE_PATH }}" .
-      - name: push to GitHub Container Registry
-        run: docker push "${{ env.DOCKER_IMAGE_PATH }}"
+      #- name: build image
+      #  run: docker build -t "${{ env.DOCKER_IMAGE_PATH }}" .
+      #- name: push to GitHub Container Registry
+      #  run: docker push "${{ env.DOCKER_IMAGE_PATH }}"
+      - name: pull image
+        run: docker pull "${{ env.DOCKER_IMAGE_PATH }}"
   

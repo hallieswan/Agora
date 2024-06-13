@@ -27,7 +27,7 @@ COPY "${LOCAL_CREATE_INDEXES_PATH}" "${CREATE_INDEXES_FILE}"
 RUN chmod +x "${IMPORT_DATA_FILE}"
 RUN chmod +x "${CREATE_INDEXES_FILE}"
 
-# Add label for GHCR source repo
+# Add GHCR labels
 LABEL org.opencontainers.image.source="${SOURCE_REPO}"
 LABEL org.opencontainers.image.description="${DESCRIPTION}"
 

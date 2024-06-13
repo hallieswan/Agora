@@ -161,7 +161,9 @@ jobs:
     needs:
       - check-for-image
       - build-image
-    if: ${{ needs.check-for-image.result == 'success' && (needs.build-image.result == 'success' || needs.build-image.result == 'skipped')}}
+    # always() prevents skipping this job when build-image was skipped
+    # see https://github.com/actions/runner/issues/491
+    if: ${{ always() && needs.check-for-image.result == 'success' && (needs.build-image.result == 'success' || needs.build-image.result == 'skipped')}}
     timeout-minutes: 60
     runs-on: ubuntu-20.04
     permissions:

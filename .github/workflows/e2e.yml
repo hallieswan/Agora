@@ -1,9 +1,6 @@
 name: Build Data Image and Run End-to-end Tests
 
 on: push
-env:
-  ORG_NAME: 'Sage-Bionetworks'
-  NAMESPACE: ${{ github.repository_owner }}
 
 jobs:
   check-for-image:
@@ -16,6 +13,8 @@ jobs:
       packages: read
     environment: e2e
     env:
+      ORG_NAME: 'Sage-Bionetworks'
+      NAMESPACE: ${{ github.repository_owner }}
       DATA_IMAGE_NAME: '${{ vars.DB_NAME }}-data'
     outputs:
       DATA_MANIFEST_ID: ${{ steps.get-ids-from-package-json.outputs.DATA_MANIFEST_ID }}
@@ -61,7 +60,7 @@ jobs:
         run: |
           GH_PATH=$( [[ "${{ env.NAMESPACE }}" == "${{ env.ORG_NAME }}" ]] && echo "${{ env.ORG_PATH }}" || echo "${{ env.USER_PATH }}" )
 
-          # allow errror to handle case where gh throws an error when package has not yet been created
+          # allow error to handle case where gh throws an error when package has not yet been created
           set +e
           IMAGE_VERSIONS=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "${GH_PATH}")
           set -e
@@ -135,7 +134,7 @@ jobs:
           docker build \
           -t "${{ env.DATA_IMAGE_PATH }}" \
           -f "${{ env.DOCKERFILE_PATH }}" \
-          --build-arg SOURCE_REPO="https://github.com/${{ env.NAMESPACE }}/${{ vars.DB_NAME }}" \
+          --build-arg SOURCE_REPO="https://github.com/${{ github.repository }}" \
           --build-arg DESCRIPTION="${GITHUB_SHA::7}" \
           --build-arg LOCAL_DATA_PATH="${{ env.LOCAL_DATA_PATH }}" \
           --build-arg LOCAL_COLLECTIONS_PATH="${{ env.LOCAL_COLLECTIONS_PATH }}" \
@@ -151,7 +150,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Note: if a new package is created using this workflow, then the package
-      # visibility will default to the source repository visbility. For example,
+      # visibility will default to the source repository visibility. For example,
       # a package created by a workflow in a public repo will also be public.
       # Publicly visible container packages are anonymously downloadable.
       - name: push to GitHub Container Registry

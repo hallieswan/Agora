@@ -10,7 +10,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASS}
       - MONGO_INITDB_DATABASE=${DB_NAME}
   mongo-seed:
-    image: ${DATA_IMAGE_TAG}
+    image: ${DATA_IMAGE_PATH}
     depends_on: 
       - mongodb
     environment:

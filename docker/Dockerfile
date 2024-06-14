@@ -1,5 +1,9 @@
 FROM mongo:latest
 
+# GHCR labels
+ARG SOURCE_REPO="https://github.com/Sage-Bionetworks/agora"
+ARG DESCRIPTION=""
+
 # Paths on local machine - may be overwritten at build time
 ARG LOCAL_DATA_PATH="./local/data" 
 ARG LOCAL_COLLECTIONS_PATH="./scripts/collections.csv"
@@ -22,6 +26,10 @@ COPY "${LOCAL_CREATE_INDEXES_PATH}" "${CREATE_INDEXES_FILE}"
 # Make scripts executable
 RUN chmod +x "${IMPORT_DATA_FILE}"
 RUN chmod +x "${CREATE_INDEXES_FILE}"
+
+# Add GHCR labels
+LABEL org.opencontainers.image.source="${SOURCE_REPO}"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
 
 # On container startup, import data into mongodb
 CMD ["/bin/bash", "import-data.sh"]

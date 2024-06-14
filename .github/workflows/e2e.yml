@@ -38,7 +38,9 @@ jobs:
           DATA_IMAGE_TAG="${DATA_MANIFEST_ID}.${DATA_VERSION}"
           echo "DATA_IMAGE_TAG=${DATA_IMAGE_TAG}" >> "$GITHUB_OUTPUT"
 
-          DATA_IMAGE_PATH="ghcr.io/${{ env.NAMESPACE }}/${{ env.DATA_IMAGE_NAME }}:${DATA_IMAGE_TAG}"
+          # GHCR requires image names to be lowercase: https://github.com/orgs/community/discussions/27086
+          NAMESPACE_LOWERCASE=$(echo "${{ env.NAMESPACE }}" | tr '[:upper:]' '[:lower:]')
+          DATA_IMAGE_PATH="ghcr.io/${NAMESPACE_LOWERCASE}/${{ env.DATA_IMAGE_NAME }}:${DATA_IMAGE_TAG}"
           echo "DATA_IMAGE_PATH=${DATA_IMAGE_PATH}" >> "$GITHUB_OUTPUT"
 
       - name: login to GitHub Container Registry

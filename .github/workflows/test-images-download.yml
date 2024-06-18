@@ -1,0 +1,52 @@
+name: Test Team Images Download
+
+on: 
+  push:
+    branches:
+      [AG-1505]
+
+jobs:
+  build-image:
+    runs-on: ubuntu-20.04
+    environment: e2e
+    env:
+      LOCAL_DATA_PATH: './local/data'
+      LOCAL_TEAM_IMAGES_DIR: './local/data/team_images'
+    steps:
+      - uses: actions/checkout@v4
+
+      # https://github.com/actions/setup-python/issues/807
+      - name: create placeholder requirements.txt file
+        run: touch ./requirements.txt
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: install synapseclient
+        run: |
+          pip install --upgrade synapseclient
+
+      - name: download data from synapse
+        timeout-minutes: 5
+        env:
+          SYNAPSE_AUTH_TOKEN: ${{ secrets.SYNAPSE_AUTH_TOKEN }}
+        run: |
+          echo "==> inputs"
+          echo "  data dir: ${{ env.LOCAL_DATA_PATH }}"
+          echo "  team images dir: ${{ env.LOCAL_TEAM_IMAGES_DIR }}"
+          echo "  team images id: ${{ vars.TEAM_IMAGES_ID }}"
+
+          echo "==> make directory for team images"
+          mkdir -p "${{ env.LOCAL_TEAM_IMAGES_DIR }}"
+
+          echo "==> download team images"
+          synapse get -r --downloadLocation "${{ env.LOCAL_TEAM_IMAGES_DIR }}/" "${{ vars.TEAM_IMAGES_ID }}"
+
+          echo "==> list data"
+          ls "${{ env.LOCAL_DATA_PATH }}"
+
+          echo "==> list team images"
+          ls "${{ env.LOCAL_TEAM_IMAGES_DIR }}"
+

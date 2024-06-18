@@ -1,6 +1,9 @@
 name: Build Data Image and Run End-to-end Tests
 
-on: push
+on: 
+  push:
+    branches:
+      [dont-run]
 
 jobs:
   check-for-image:

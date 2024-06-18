@@ -1,8 +1,21 @@
-name: Build Data Image and Run End-to-end Tests
+name: Build and run unit tests, build data image and run e2e tests
 
 on: push
 
 jobs:
+  build-and-run-unit-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+          cache: 'npm'
+      - run: npm ci
+      - run: APP_ENV=develop npm run ci:build:develop
+      - run: npm test
+
   check-for-image:
     # Run in Sage repo on develop or main branches
     # and on all branches in user-owned forks
@@ -184,9 +197,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16
+          cache: 'npm'
 
       - name: install dependencies
-        run: npm install
+        run: npm ci
 
       - name: install Playwright Browsers
         run: npx playwright install --with-deps

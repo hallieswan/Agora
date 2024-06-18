@@ -11,6 +11,7 @@ services:
       - MONGO_INITDB_DATABASE=${DB_NAME}
   mongo-seed:
     image: ${DATA_IMAGE_PATH}
+    platform: linux/amd64
     depends_on: 
       - mongodb
     environment:

@@ -28,7 +28,7 @@ jobs:
     env:
       ORG_NAME: 'Sage-Bionetworks'
       NAMESPACE: ${{ github.repository_owner }}
-      DATA_IMAGE_NAME: '${{ vars.DB_NAME }}-data'
+      DATA_IMAGE_NAME: '${{ vars.DB_NAME }}-data-nonmonorepo'
     outputs:
       DATA_MANIFEST_ID: ${{ steps.get-ids-from-package-json.outputs.DATA_MANIFEST_ID }}
       DATA_VERSION: ${{ steps.get-ids-from-package-json.outputs.DATA_VERSION }}

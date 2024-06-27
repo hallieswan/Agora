@@ -179,7 +179,7 @@ Go to [http://localhost:8080](http://localhost:8080)
 
 #### Creating an image for a new data release
 
-A "data release" is defined in the `package.json` by the `data-file` and `data-version` values. Images pre-loaded with data from the data release are created when the `e2e.yml` GitHub Action workflow runs and are pushed to the GitHub Container Registry (GHCR) package for that namespace -- the `sage-bionetworks` organization namespace when the workflow runs in the base repo or in the user's namespace (e.g. `hallieswan`) when running in a forked repo.
+A "data release" is defined in the `package.json` by the `data-file` and `data-version` values. Images pre-loaded with data from the data release are created when the `ci.yml` GitHub Action workflow runs and are pushed to the GitHub Container Registry (GHCR) package for that namespace -- the `sage-bionetworks` organization namespace when the workflow runs in the base repo or in the user's namespace (e.g. `hallieswan`) when running in a forked repo.
 
 The `sage-bionetworks` package will contain images for data releases that have been specified in `package.json` on `develop` or `main`. The user's package will contain images for data releases that have been specified in `package.json` in branches pushed to their fork. 
 
@@ -189,9 +189,9 @@ If a dev needs to create an image for a data release that does not yet exist in 
 2. Update the `package.json` to reflect the appropriate `data-file` and `data-version` files.
 3. If necessary, update `./scripts/collections.csv` to specify new collections and `./scripts/mongo-create-Indexes.js` to specify new indexes.
 4. Commit the changes.
-5. Push the changes to your remote fork to trigger a run of the `e2e.yml` workflow. 
-6. The new image will be available in your user namespaced GHCR package, e.g. `https://github.com/hallieswan/Agora/pkgs/container/agora-data`.
-7. Update your local `.env` file so `DATA_IMAGE_PATH` points to the newly created image, e.g. `ghcr.io/hallieswan/agora-data:syn13363290.68`.
+5. Push the changes to your remote fork to trigger a run of the `ci.yml` workflow. 
+6. The new image will be available in your user namespaced GHCR package, e.g. `https://github.com/hallieswan/Agora/pkgs/container/agora-data-nonmonorepo`.
+7. Update your local `.env` file so `DATA_IMAGE_PATH` points to the newly created image, e.g. `ghcr.io/hallieswan/agora-data-nonmonorepo:syn13363290.68`.
 8. Start the containerized database: `npm run docker:db:start`.
 
 # Development

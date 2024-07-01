@@ -173,7 +173,7 @@ Go to [http://localhost:8080](http://localhost:8080)
 
 1. Install [Docker Desktop](https://docs.docker.com/desktop/) and [jq](https://jqlang.github.io/jq/) (`brew install jq`), if necessary.
 2. Update `data-file` and `data-version` in `package.json` to reflect the desired data release version, if necessary.
-3. Create an environment file: `npm run create-env`. 
+3. Create an environment file: `npm run create-env`. The credentials for connecting to the containerized MongoDB will be included in the generated `.env` file, where the connection string will be: `mongodb://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}`.
 4. Start the containerized database: `npm run docker:db:start`. The necessary images will be pulled from GHCR. If you would like to use a different image, update DATA_IMAGE_PATH in .env. If the desired image does not exist, see steps below to create the desired image.
 5. Run the server and app against the containerized database: `npm run docker:dev`.
 6. Stop the containerized database: `npm run docker:db:stop`.
@@ -186,14 +186,15 @@ The `sage-bionetworks` package will contain images for data releases that have b
 
 If a dev needs to create an image for a data release that does not yet exist in the Sage-Bionetworks package, they should follow these steps: 
 
-1. Create a new branch.
-2. Update the `package.json` to reflect the appropriate `data-file` and `data-version` files.
-3. If necessary, update `./scripts/collections.csv` to specify new collections and `./scripts/mongo-create-Indexes.js` to specify new indexes.
-4. Commit the changes.
-5. Push the changes to your remote fork to trigger a run of the `ci.yml` workflow. 
-6. The new image will be available in your user namespaced GHCR package, e.g. `https://github.com/hallieswan/Agora/pkgs/container/agora-data-nonmonorepo`.
-7. Update your local `.env` file so `DATA_IMAGE_PATH` points to the newly created image, e.g. `ghcr.io/hallieswan/agora-data-nonmonorepo:syn13363290.68`.
-8. Start the containerized database: `npm run docker:db:start`.
+1. Set up GitHub secrets/variables in your remote fork as described [here](docker/README.md#workflow-setup), if necessary.
+2. Create a new branch.
+3. Update the `package.json` to reflect the appropriate `data-file` and `data-version` files.
+4. If necessary, update `./scripts/collections.csv` to specify new collections and `./scripts/mongo-create-Indexes.js` to specify new indexes.
+5. Commit the changes.
+6. Push the changes to your remote fork to trigger a run of the `ci.yml` workflow. 
+7. The new image will be available in your user namespaced GHCR package, e.g. `https://github.com/hallieswan/Agora/pkgs/container/agora-data-nonmonorepo`.
+8. Update your local `.env` file so `DATA_IMAGE_PATH` points to the newly created image, e.g. `ghcr.io/hallieswan/agora-data-nonmonorepo:syn13363290.68`.
+9. Start the containerized database: `npm run docker:db:start`.
 
 # Development
 

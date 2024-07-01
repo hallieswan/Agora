@@ -215,7 +215,7 @@ jobs:
       - name: start database, server, and app
         run: |
           echo "==> start database and data containers"
-          docker-compose -f "${{ env.DOCKER_COMPOSE_PATH }}" up -d
+          docker compose -f "${{ env.DOCKER_COMPOSE_PATH }}" up -d
 
           echo "==> wait for data container to finish seeding database container"
           DATA_CONTAINER=$(docker compose -f "${{ env.DOCKER_COMPOSE_PATH }}" ps -a --format '{{.Name}}' mongo-seed)
@@ -237,7 +237,7 @@ jobs:
           pid=$(lsof -i :8080 -t) && kill ${pid}
 
           echo "==> stop database"
-          docker-compose -f "${{ env.DOCKER_COMPOSE_PATH }}" down
+          docker compose -f "${{ env.DOCKER_COMPOSE_PATH }}" down
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

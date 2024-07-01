@@ -7,15 +7,15 @@ Files in this directory:
 
 ## Workflow Setup
 
-The following secrets and variables need to be set up in GitHub for the `ci.yml` workflow to create the `agora-data-nonmonorepo` Docker image:
+The following secrets and variables need to be set up in GitHub for the `ci.yml` workflow to create the `agora-data-nonmonorepo` Docker image. See instructions for creating a GitHub environment and adding secrets/variables [here](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#creating-an-environment).
 
 e2e Environment secrets:
 
-| Variable           | Description                                | Example           |
-| ------------------ | ------------------------------------------ | ----------------- |
-| DB_USER            | The database user                          | dbuser            |
-| DB_PASS            | The database password                      | supersecret       |
-| SYNAPSE_AUTH_TOKEN | The Synapse service user view/download PAT | token-string-here |
+| Secret             | Description                                            | Example           |
+| ------------------ | ------------------------------------------------------ | ----------------- |
+| DB_USER            | The database user                                      | dbuser            |
+| DB_PASS            | The database password                                  | supersecret       |
+| SYNAPSE_AUTH_TOKEN | View/download PAT for `synapse-service-agora-e2e` user | token-string-here |
 
 e2e Environment variables:
 

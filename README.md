@@ -11,12 +11,13 @@ What you need to run this app:
 - `node` and `npm` (`brew install node`)
 
   - Ensure you're running the latest versions Node `v16.x.x`+ and NPM `8.x.x`+
-- A version 6.0+ [MongoDB](https://www.mongodb.com/docs/manual/administration/install-community/) instance running on your local machine
-
-- You can optionally use a GUI like [Compass](https://www.mongodb.com/docs/compass/current/) or [Studio3T](https://studio3t.com/knowledge-base/articles/installation/) with your local database
-
+- If running against a local database: 
+  - A version 6.0+ [MongoDB](https://www.mongodb.com/docs/manual/administration/install-community/) instance running on your local machine
+  - You can optionally use a GUI like [Compass](https://www.mongodb.com/docs/compass/current/) or [Studio3T](https://studio3t.com/knowledge-base/articles/installation/) with your local database
   - Note that only Studio3T is compatible with the [AWS DocumentDB](https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html) instances in Agora's dev, stage and prod environments. Either GUI tool will work with your local Mongo instance.
-
+- If running against a conatinerized database:
+  - [Docker Desktop](https://docs.docker.com/desktop/)
+  - [jq](https://jqlang.github.io/jq/) (`brew install jq`)
 
 > If you have `nvm` installed, which is highly recommended (`brew install nvm`) you can do a `nvm install --lts && nvm use` in `$` to run with the latest Node LTS. You can also have this `zsh` done for you [automatically](https://github.com/creationix/nvm#calling-nvm-use-automatically-in-a-directory-with-a-nvmrc-file)
 
@@ -170,7 +171,7 @@ Go to [http://localhost:8080](http://localhost:8080)
 
 ### 6 - Use containerized database
 
-1. Install Docker, if necessary.
+1. Install [Docker Desktop](https://docs.docker.com/desktop/) and [jq](https://jqlang.github.io/jq/) (`brew install jq`), if necessary.
 2. Update `data-file` and `data-version` in `package.json` to reflect the desired data release version, if necessary.
 3. Create an environment file: `npm run create-env`. 
 4. Start the containerized database: `npm run docker:db:start`. The necessary images will be pulled from GHCR. If you would like to use a different image, update DATA_IMAGE_PATH in .env. If the desired image does not exist, see steps below to create the desired image.
